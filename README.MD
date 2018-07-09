@@ -7,3 +7,13 @@
     * [Задание №1](Calendar)
     * [Задание №2](Checkout)
 3. Результат твоей работы необходимо опубликовать (github pages, heroku, и т.д.) и отправь ссылку тому, кто проводил твое интервью или связывался с тобой.
+
+
+# ======================================
+VueJS starter with Webpack 4
+
+## Steps to get started:
+1. Clone the project at git@github.com:nnupoor/webpack4vue.git
+2. npm install / yarn add
+4. npm run dev => development build
+5. npm run build => production build
