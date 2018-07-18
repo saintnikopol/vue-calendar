@@ -80,9 +80,9 @@ let weekObjektFunction = function(dateArray) {
 
 
 
-let indexFirstDay = 0;
+let indexFirstDayOfWeek = 0;
 
-let functionDataYear = function(monthTodayNumber){
+let functionDataYearCalculateIndexFirstDayOfWeek = function(monthTodayNumber){
 
   let scopeMonth = new Array();
   let indexDayToday = dayWeekday.getDay();
@@ -90,56 +90,52 @@ let functionDataYear = function(monthTodayNumber){
 
   //let z  = z;
   for (let i = 0; i <= monthTodayNumber-1; i++){
-
     scopeMonth.push(MONTH_LIST_DEFINITION[i].daysInMonth);
-  };
+  }
 
   scopeMonth.forEach(function(value, index) {
     count += +value;
   });
   let sevenW = Math.floor((count+dateToday) / 7);
   let index = count + dateToday - (sevenW * 7);
-  let indexFirstDayYear = index - indexDayToday;
+  let indexFirstDayOfYear = index - indexDayToday;
   let indexMonth = Math.floor(count/7);
   let zzz = count - (indexMonth * 7);
 
-  let indexFirstDay =  indexFirstDayYear + zzz - 1;
-  //console.log(indexFirstDay,'indexFirstDay')
-return indexFirstDay;
+  let indexFirstDayOfWeek =  indexFirstDayOfYear + zzz - 1;
+  console.log(indexFirstDayOfWeek,'indexFirstDayOfWeek')
+  return indexFirstDayOfWeek;
 };
 
 /**
  *
  * @param monthTodayNumber  0 .. 11
- * @param prevDate  35 - length of month
+ * @param currentDateFirstDateOfWeekIndex  35 - length of month
  * @returns {Array}
  */
-let dateArrayPrevFunction = function(monthTodayNumber, prevDate){
-
-  //@TODO: remove this
-  if (typeof monthTodayNumber == "undefined") {
-    monthTodayNumber = monthTodayIndex;
-  }
+let dateArrayPrevFunction = function(monthTodayNumber, currentDateFirstDateOfWeekIndex){
 
   let dateArrayPrev = [];
-  //let newI = monthTodayNumber - 1;
-  let newI = monthTodayNumber > 0 ? monthTodayNumber - 1 : 11;
+  let prevMonthIndex = getPrevMonthIndex(monthTodayIndex);
 
-  let prevMonth = MONTH_LIST_DEFINITION[newI].daysInMonth;
-  //let prevFirstDay  = (prevMonth - prevDate) +1 ;
-  let stepprev;
-  for( stepprev = 1; stepprev <= prevDate; stepprev++){
-    dateArrayPrev.push(stepprev);
+  let prevMonthDaysCount = MONTH_LIST_DEFINITION[prevMonthIndex].daysInMonth;
+  //let prevFirstDay  = (prevMonth - currentDateFirstDateOfWeekIndex) +1 ;
+  //let stepprev;
+  //for( stepprev = 1; stepprev <= currentDateFirstDateOfWeekIndex; stepprev++){
+  //  dateArrayPrev.push(stepprev);
+  //}
+  for (let i = prevMonthDaysCount - currentDateFirstDateOfWeekIndex; i <= prevMonthDaysCount; i++) {
+    dateArrayPrev.push(i);
   }
-  //console.log(prevDate,'prevDate',dateArrayPrev,prevMonth,'prevMonth',prevFirstDay,'prevFirstDay')
+  //console.log(currentDateFirstDateOfWeekIndex,'currentDateFirstDateOfWeekIndex',dateArrayPrev,prevMonth,'prevMonth',prevFirstDay,'prevFirstDay')
   return dateArrayPrev;
 };
 
-//functionDataYear();
+//functionDataYearCalculateIndexFirstDayOfWeek();
 /**
  * Changes "weekObject"
- * @param prevMonthVisible
- * @param monthTodayNumber
+ * @param {String} prevMonthVisible
+ * @param {Number} monthTodayNumber
  */
 let dateTodayFun = function(prevMonthVisible, monthTodayNumber) {
 
@@ -154,16 +150,18 @@ let dateTodayFun = function(prevMonthVisible, monthTodayNumber) {
           dateArray.push(y);
         }
 
-        let prevDate = functionDataYear(monthTodayNumber);
-        let nextDate = 35 - daysInMonth - prevDate;
+        let currentDateFirstDateOfWeekIndex = functionDataYearCalculateIndexFirstDayOfWeek(monthTodayNumber);
+        let nextDate = 35 - daysInMonth - currentDateFirstDateOfWeekIndex;
         let step =1;
 
-        let dateArrayPrev = dateArrayPrevFunction(monthTodayNumber, prevDate);
+        let dateArrayPrev = dateArrayPrevFunction(monthTodayNumber, currentDateFirstDateOfWeekIndex);
+        console.log('let dateArrayPrev = dateArrayPrevFunction(monthTodayNumber, currentDateFirstDateOfWeekIndex);', dateArrayPrev);
+
 
         for (step = 1; step <= nextDate; step++) {
           dateArray.push(step);
         }
-        ;
+
         weekObjektFunction(dateArray);
       }
       if (daysInMonth === '30') {
@@ -172,15 +170,15 @@ let dateTodayFun = function(prevMonthVisible, monthTodayNumber) {
         for (let y = 1; y <= daysInMonth; y++) {
           dateArray.push(y);
         }
-        ;
-        let prevDate = indexFirstDay;
-        let nextDate = 35 - daysInMonth - prevDate;
-        let newI = i - 1;
-        let prevMonth = MONTH_LIST_DEFINITION[newI].daysInMonth;
+
+        let currentDateFirstDateOfWeekIndex = indexFirstDayOfWeek;
+        let nextDate = 35 - daysInMonth - currentDateFirstDateOfWeekIndex;
+        let prevMonthIndex = getPrevMonthIndex(i);
+        let prevMonth = MONTH_LIST_DEFINITION[prevMonthIndex].daysInMonth;
         var step;
         let stepprev =1;
         let dateArrayPrev = new Array();
-        for( stepprev =1; stepprev <= prevDate; stepprev++){
+        for( stepprev =1; stepprev <= currentDateFirstDateOfWeekIndex; stepprev++){
           dateArrayPrev.push(stepprev);
         }
         dateArrayPrev.reverse();
@@ -189,7 +187,7 @@ let dateTodayFun = function(prevMonthVisible, monthTodayNumber) {
         }
         //let dateArray = dateArray.concat(dateArrayPrev);
 
-        //console.log(sevenW, prevDate, nextDate, 'npm')
+        //console.log(sevenW, currentDateFirstDateOfWeekIndex, nextDate, 'npm')
         weekObjektFunction(dateArray);
       }
       if (daysInMonth === '28') {
@@ -202,17 +200,17 @@ let dateTodayFun = function(prevMonthVisible, monthTodayNumber) {
         let indexDayToday = dayWeekday.getDay();
         let sevenW = Math.floor(dateToday / 7);
         let index = dateToday - (sevenW * 7);
-        let indexFirstDay = index - indexDayToday - 1;
-        let weekdayFirstDay = WEEKDAY_LIST[indexFirstDay];
-        let prevDate = indexFirstDay;
-        let nextDate = 35 - daysInMonth - prevDate;
-        let newI = i - 1;
-        let prevMonth = MONTH_LIST_DEFINITION[newI].daysInMonth;
+        let indexFirstDayOfWeek = index - indexDayToday - 1;
+        let weekdayFirstDay = WEEKDAY_LIST[indexFirstDayOfWeek];
+        let currentDateFirstDateOfWeekIndex = indexFirstDayOfWeek;
+        let nextDate = 35 - daysInMonth - currentDateFirstDateOfWeekIndex;
+        let prevMonthIndex = getPrevMonthIndex(i);
+        let prevMonth = MONTH_LIST_DEFINITION[prevMonthIndex].daysInMonth;
         var step;
         for (step = 1; step <= nextDate; step++) {
           dateArray.push(step);
         }
-        //console.log(sevenW, prevDate, nextDate, 'npm')
+        //console.log(sevenW, currentDateFirstDateOfWeekIndex, nextDate, 'npm')
         weekObjektFunction();
       }
       if (daysInMonth === '29') {
@@ -225,12 +223,12 @@ let dateTodayFun = function(prevMonthVisible, monthTodayNumber) {
         let indexDayToday = dayWeekday.getDay();
         let sevenW = Math.floor(dateToday / 7);
         let index = dateToday - (sevenW * 7);
-        let indexFirstDay = index - indexDayToday - 1;
-        let weekdayFirstDay = WEEKDAY_LIST[indexFirstDay];
-        let prevDate = indexFirstDay;
-        let nextDate = 35 - daysInMonth - prevDate;
-        let newI = i - 1;
-        let prevMonth = MONTH_LIST_DEFINITION[newI].daysInMonth;
+        let indexFirstDayOfWeek = index - indexDayToday - 1;
+        let weekdayFirstDay = WEEKDAY_LIST[indexFirstDayOfWeek];
+        let currentDateFirstDateOfWeekIndex = indexFirstDayOfWeek;
+        let nextDate = 35 - daysInMonth - currentDateFirstDateOfWeekIndex;
+        let prevMonthIndex = getPrevMonthIndex(i);
+        let prevMonth = MONTH_LIST_DEFINITION[prevMonthIndex].daysInMonth;
         var step;
         for (step = 1; step <= nextDate; step++) {
           dateArray.push(step);
@@ -396,7 +394,15 @@ const calendarTab = {
 //paginatorMonth.selectMonth;
 //paginatorMonth.visibleMonth;
 //calendarTab.dateTodayFun;
-dateTodayFun();
+function getPrevMonthName(monthTodayIndex) {
+  let prevIndex = monthTodayIndex > 0 ? monthTodayIndex - 1 : 12;
+  return MONTH_LIST[prevIndex]
+}
+
+function getPrevMonthIndex(monthTodayIndex) {
+  return monthTodayIndex > 0 ? monthTodayIndex - 1 : 12;
+}
+dateTodayFun(getPrevMonthName(monthTodayIndex), monthTodayIndex);
 //Vue.component('paginator-month', paginatorMonth);
 Vue.component('calendar-tab', calendarTab);
 
